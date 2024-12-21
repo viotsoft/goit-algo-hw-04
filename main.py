@@ -56,7 +56,7 @@ def generate_test_data(size, order='random'):
 
 # Порівняння алгоритмів сортування
 def compare_algorithms():
-    sizes = [100, 1000, 10000, 100000]      
+    sizes = [10, 100, 1000, 10000]      
     orders = ['random', 'sorted', 'reversed']
 
     for size in sizes:
