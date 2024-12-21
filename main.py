@@ -1,5 +1,7 @@
 import random
 import timeit
+import pandas as pd
+
 
 # Реалізація сортування злиттям (Merge Sort)
 def merge_sort(arr):
@@ -8,11 +10,9 @@ def merge_sort(arr):
         left_half = arr[:mid]
         right_half = arr[mid:]
 
-        # Рекурсивний виклик для кожної половини
         merge_sort(left_half)
         merge_sort(right_half)
 
-        # Злиття двох відсортованих половин
         i = j = k = 0
         while i < len(left_half) and j < len(right_half):
             if left_half[i] < right_half[j]:
@@ -23,7 +23,6 @@ def merge_sort(arr):
                 j += 1
             k += 1
 
-        # Додавання залишків
         while i < len(left_half):
             arr[k] = left_half[i]
             i += 1
@@ -40,7 +39,6 @@ def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1
-        # Переміщення елементів, які більші за key
         while j >= 0 and arr[j] > key:
             arr[j + 1] = arr[j]
             j -= 1
@@ -48,20 +46,22 @@ def insertion_sort(arr):
 
 
 # Функція для генерації тестових масивів
-def generate_test_data(size, order='random'):
-    if order == 'random':
+def generate_test_data(size, order="random"):
+    if order == "random":
         return [random.randint(0, 10000) for _ in range(size)]
-    elif order == 'sorted':
+    elif order == "sorted":
         return list(range(size))
-    elif order == 'reversed':
+    elif order == "reversed":
         return list(range(size, 0, -1))
 
 
 # Порівняння алгоритмів
 def compare_algorithms():
     sizes = [10, 100, 1000, 10000]
+    results = []
+
     for size in sizes:
-        data = generate_test_data(size, order='random')
+        data = generate_test_data(size, order="random")
 
         # Копії для кожного алгоритму
         data_merge = data[:]
@@ -69,30 +69,38 @@ def compare_algorithms():
         data_sorted = data[:]
         data_sort = data[:]
 
-        print(f"Number of elements: {size}")
-
-        # Вимірювання часу Merge Sort
         merge_time = timeit.timeit(lambda: merge_sort(data_merge), number=1)
-        print(f"Merge Sort: {merge_time:.10f} seconds")
-
-        # Вимірювання часу Insertion Sort
-        if size <= 1000:  # Insertion Sort занадто повільний для великих масивів
-            insertion_time = timeit.timeit(lambda: insertion_sort(data_insertion), number=1)
-            print(f"Insertion Sort: {insertion_time:.10f} seconds")
-        else:
-            print("Insertion Sort: skipped (too slow)")
-
-        # Вимірювання часу sorted()
+        insertion_time = (
+            timeit.timeit(lambda: insertion_sort(data_insertion), number=1)
+            if size <= 1000
+            else "skipped"
+        )
         sorted_time = timeit.timeit(lambda: sorted(data_sorted), number=1)
-        print(f"Timsort (sorted): {sorted_time:.10f} seconds")
-
-        # Вимірювання часу sort()
         sort_time = timeit.timeit(lambda: data_sort.sort(), number=1)
-        print(f"Timsort (sort): {sort_time:.10f} seconds")
 
-        print()
+        results.append(
+            {
+                "Size": size,
+                "Merge Sort (s)": merge_time,
+                "Insertion Sort (s)": insertion_time,
+                "Timsort (sorted) (s)": sorted_time,
+                "Timsort (sort) (s)": sort_time,
+            }
+        )
+    return pd.DataFrame(results)
 
 
-# Запуск порівняння
-if __name__ == "__main__":
-    compare_algorithms()
+# Виконання аналізу
+results_df = compare_algorithms()
+
+# Збереження результатів у Markdown файл
+def save_results_to_md(df, filename="results.md"):
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("# Результати порівняння алгоритмів сортування\n\n")
+        f.write(df.to_markdown(index=False))
+        f.write("\n")
+
+# Збереження результатів
+save_results_to_md(results_df)
+print("Результати збережено у файл 'results.md'")
+
