@@ -1,6 +1,7 @@
 ### **Висновки по алгоритмам сортування**
 
-![image](https://github.com/user-attachments/assets/46f96c6d-2366-4882-a1ad-b4d7770d117b)
+![image](https://github.com/user-attachments/assets/6f3ccb5e-ce3d-4a4a-904e-460ae38f79ca)
+
 
 1. **Merge Sort (Сортування злиттям):**
    - **Переваги:**
